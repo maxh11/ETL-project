@@ -1,0 +1,28 @@
+Separated ETL logic into multiple files
+
+ETL Job:
+    * entry point for the job
+    * Code broken down into multiple ETL steps to make it easy to understand
+    * datasets and schemas abstracted so there is room for other input methods and other datasets, not just csv files provided
+
+Extract:
+    * other extract methods can be added here for example readJSON
+    * schemas passed in so that they can be applied to data
+
+Transform:
+    * multiple cast functions, some not filled, where the types inferred in the dataframe objects can be corrected if necessary
+    * data taken out of tables connected through joins
+    * sql used for readability and manual testing purposes, easy to change in the future
+    * result cast into the right type including 2 decimal place currency format
+
+Load:
+    * potential for different load types to be added like load_sql()
+
+Tests:
+    * the test using pytest are put in another directory so that new test files can be added when needed
+    * test files using csv so that new cases can be tested easily
+    * other tests can be added in the future but the only necessary one here is to test the transform. In future it is
+        a good idea to test the load and extract as well.
+
+* Highlights any intermediate data models you might use to store the data and why
+ I havent used any intermediate data models here but it might be useful in production to include

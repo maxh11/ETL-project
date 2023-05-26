@@ -1,0 +1,4 @@
+inv_id,acct_id,inv_total,inv_items,acct_age,number_of_inv120,cum_tot_inv_acct,is_late
+1,1,70.0,2,1,0,0,0
+2,1,30.0,1,31,1,1,0
+3,1,310.0,3,60,2,2,1

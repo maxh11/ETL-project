@@ -1,0 +1,56 @@
+Shows the architecture of a production system that could run your (and similar) ETL jobs on a regular basis, before
+exposing the resulting datasets to the various consumers.
+- see diagram 3
+
+* The scientists would like to be able to see what their features looked like at different points in time
+(e.g. one month ago vs today). They appreciate that they will need to make some compromises on how much data we can store,
+and will take your advice re: keeping old versions of the features.
+ We will use Delta Lake on top of our s3 datalake
+ We will delete old versions of the features when there is an agreement across
+ teams that we don't need them anymore for ML or reporting or analytics. (Eg. could be invoices over 15 years old)
+
+* The finance and BI teams are also interested in the invoice data, and would like to query it. They are proficient in SQL only.
+They can use the Amazon Athena engine to query the datalake. We can create views for them using CREATE TABLE on the
+underlying parquet data.
+
+- Indicates how your architecture would evolve to support near real-time updating of data as the TRS engineering team enables CDC.
+move towards a completley serverless architecture using aws
+
+Set up Kafka using Amazon MSK
+ 1. We need to set up CDC on our Aurora database and configure it to publish cdc events to kafka
+ 2. Need to set up a connector
+ 3. the etl job would need to be updated to run in a streaming fashion updating it to read directly from kafka.
+
+Set up ETL 1 on AWS Glue
+ 1. set up the ETL to read from Kafka.
+ 2. transform the data
+ 3. Write the transformed data to our s3 datalake. Use DeltaLake library to support the data scientists
+    requirement of needing to access old features
+
+Set up the S3 container that we will use for our datalake and a staging area for invoice data before features are calcuated
+and added to AWS redshift
+ 1. enable DeltaLake features
+ 2. store data in Parquet format, better choice for big data because of compression and works with spark efficiently.
+
+Set up ETL job 2 on AWS glue
+ 1. set up a continuous monitoring job so that new data can be extracted out of data lake
+ 2. calculate the features using existing data in data warehouse to reduce calculating time
+ 3. transform the data into a format that can be loaded into redshift data warehouse
+
+Set up AWS Redshift
+ 1. connect to Amazon Athena Query Engine
+ 2. only store currently used features
+
+Key architectural decisions that were made include:
+* Serverless architecture for scalability.
+* Kept everything AWS for compatibility.
+* Kafka in conjunction with CDC events enables decoupling of data producers and consumers. We can set up other etl jobs
+  to consume the kafka topics or we can consume from different sources
+* including a datalake for staging invoice data simplifies ETL job 2. It also separates storage and compute by decoupling the
+   storage and processing layers. Allows us to add new etl jobs in the future accessing a simple data set.
+
+
+
+
+
+

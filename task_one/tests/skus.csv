@@ -1,0 +1,4 @@
+item_id,item_name,item_description,item_cost_price,item_retail_price
+item1,Product 1,Description 1,10.0,20.0
+item2,Product 2,Description 2,15.0,30.0
+item3,Product 3,Description 3,20.0,40.0

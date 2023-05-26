@@ -1,0 +1,48 @@
+Shows the architecture of a production system that could run your (and similar) ETL jobs on a regular basis, before exposing the resulting datasets to the various consumers.
+
+* The scientists would like to be able to see what their features looked like at different points in time
+(e.g. one month ago vs today). They appreciate that they will need to make some compromises on how much data we can store,
+and will take your advice re: keeping old versions of the features.
+ We will use Delta Lake. We will delete old versions of the features when there is an agreement accross
+ teams that we don't need them anymore for ML or reporting or analytics. Could be invoices over 15 years or something similar.
+
+* The finance and BI teams are also interested in the invoice data, and would like to query it. They are proficient in SQL only.
+They can use the Amazon Athena engine to query the datalake.
+
+- Indicates how your architecture would evolve to support near real-time updating of data as the TRS engineering team enables CDC.
+move towards a completley serverless architecture using aws
+
+Set up Kafka on Amazon MSK
+ 1. We need to set up CDC on our Aurora database and configure it to publish cdc events to kafka
+ 2. the etl job would need to be updated to run in a streaming fashion updating it to read directly from kafka.
+
+Set up ETL on AWS Glue
+ 1. set up the ETL consume from Kafka.
+ 2. transform the data
+ 3. Write the transformed data to our s3 datalake. Use DeltaLake library to support the data scientists
+    requirement of needing to access old features. Schema changes will be stored in meta data
+
+Set up the S3 container that we will use for our datalake
+ 1. enable DeltaLake features
+ 2. store data in Parquet format, better choice for big data because of compression and works with spark efficiently.
+ 3. connect to Amazon Athena Query Engine. Configure Athena for multipe tables with relevant features to be
+
+Set up ETL job 2 on AWS glue
+ 1. set up a schedule job so that new data can be extracted out of data lake
+ 2. transform the data into a format that can be loaded into data redshift data warehouse
+
+Set up AWS Redshift
+ 1. connect to Amazon Athena Query Engine
+ 2. only store currently used features
+
+Key architectural decisions that were made include:
+* Serverless architecture for scalability.
+* Kept everything AWS for compatibility.
+* ETL between data lake and ware house to ensure data is in sync.
+
+
+
+
+
+
+
